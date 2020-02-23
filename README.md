@@ -3,7 +3,7 @@
 ## Algorithms
 Various Reinforcement Learning algorithms
 
-#A2C
+#### A2C
 Advantage Actor Critic `A2C.py` is a state of the art RL algorithm
 that involves two models (or two out puts of one model): a policy actor 
 and a separate value model.  Advantage actor critic goes further 
@@ -13,12 +13,12 @@ from the value you get from taking the next action.
 ## Models
 Classes for neural networks
 
-#A2C models
+#### A2C models
 These classes are set up specifically for A2C 
 (they will have two outputs: an actor and a critic)
 
 
-## Info
+## Other Info
 These examples are written in Tensorflow 2
 
 
