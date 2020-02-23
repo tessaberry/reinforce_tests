@@ -7,7 +7,8 @@ import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 
-from models.simple_dense_model_v0 import Model
+#from models.simple_dense_model_v0 import Model
+from models.seperate_actor_critic import SeparateActorCritic
 from agents.A2C_agent import A2CAgent
 
 ##-----------------
@@ -19,7 +20,9 @@ logging.getLogger().setLevel(logging.INFO)
 # set up the game environment
 # here we are using openAI gym's cartpole
 env = gym.make('CartPole-v0')
-model = Model(num_actions=env.action_space.n)
+model = SeparateActorCritic(num_actions=env.action_space.n,
+                            actor_conv_layers=None,
+                            critic_conv_layers=None)
 agent = A2CAgent(model)
 
 ##-----------------

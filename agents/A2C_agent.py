@@ -8,7 +8,7 @@ import logging
 class A2CAgent:
     def __init__(self,
                  model,
-                 optimizer = ko.RMSprop(lr=0.0007) ):
+                 optimizer = ko.RMSprop(lr=0.0007)):
         # hyperparameters for loss terms, gamma is the discount coefficient
         self.params = {
             'gamma': 0.99,

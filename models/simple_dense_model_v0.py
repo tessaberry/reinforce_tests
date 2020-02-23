@@ -10,25 +10,33 @@ class ProbabilityDistribution(tf.keras.Model):
         # sample a random categorical action from given logits
         return tf.squeeze(tf.random.categorical(logits, 1), axis=-1)
 
+"""
+This is actully two models for actor critic
+    self.logits: actor/ policy
+    self.value: value  
+"""
 
 class Model(tf.keras.Model):
     def __init__(self, num_actions):
         super().__init__('mlp_policy')
-        # no tf.get_variable(), just simple Keras API
-        self.hidden1 = kl.Dense(128, activation='relu')
-        self.hidden2 = kl.Dense(128, activation='relu')
-        self.value = kl.Dense(1, name='value')
-        # logits are unnormalized log probabilities
-        self.logits = kl.Dense(num_actions, name='policy_logits')
+
+        # actor policy network
+        self.actor_hidden = kl.Dense(128, activation='relu')
+        self.actor_logits = kl.Dense(num_actions, name='policy_logits')
         self.dist = ProbabilityDistribution()
+
+        # value network
+        self.value_hidden = kl.Dense(128, activation='relu')
+        self.value_out = kl.Dense(1, name='value')
+
 
     def call(self, inputs):
         # inputs is a numpy array, convert to Tensor
         x = tf.convert_to_tensor(inputs)
         # separate hidden layers from the same input tensor
-        hidden_logs = self.hidden1(x)
-        hidden_vals = self.hidden2(x)
-        return self.logits(hidden_logs), self.value(hidden_vals)
+        hidden_logs = self.actor_hidden(x)
+        hidden_vals = self.value_hidden(x)
+        return self.actor_logits(hidden_logs), self.value(hidden_vals)
 
     def action_value(self, obs):
         # executes call() under the hood
