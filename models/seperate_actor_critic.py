@@ -3,7 +3,7 @@ import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 import tensorflow.keras.initializers as kinit
-import  numpy as np
+import numpy as np
 import logging
 
 class ProbabilityDistribution(tf.keras.Model):
@@ -110,3 +110,7 @@ class SeparateActorCritic(tf.keras.Model):
         # a simpler option, will become clear later why we don't use it
         # action = tf.random.categorical(logits, 1)
         return np.squeeze(action, axis=-1), np.squeeze(value, axis=-1)
+
+    def get_logits(self):
+        logits, value = self.predict(obs)
+        return logits

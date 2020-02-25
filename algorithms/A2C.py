@@ -1,25 +1,30 @@
-import  numpy as np
+import numpy as np
 import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 import logging
 
+
 class A2CAgent:
     def __init__(self,
                  model,
+                 policy_loss,
+                 value_loss,
                  optimizer = ko.RMSprop(lr=0.0007)):
         # hyperparameters for loss terms, gamma is the discount coefficient
         self.params = {
             'gamma': 0.99,
-            'value': 0.5,
-            'entropy': 0.0001
+            #'value': 0.5,
+            #'entropy': 0.0001
         }
         self.model = model
         self.model.compile(
             optimizer=optimizer,
             # define separate losses for policy logits and value estimate
-            loss=[self._logits_loss, self._value_loss]
+            #TODO try importing PolicyAndEntropyLoss here and calling it that way
+            #loss=[self._logits_loss, self._value_loss]
+            loss=[policy_loss,value_loss]
         )
 
     def train(self, env, batch_sz=32, updates=1000):
@@ -73,21 +78,6 @@ class A2CAgent:
         advantages = returns - values
         return returns, advantages
 
-    def _value_loss(self, returns, value):
-        # value loss is typically MSE between value estimates and returns
-        return self.params['value'] * kls.mean_squared_error(returns, value)
-
-    def _logits_loss(self, acts_and_advs, logits):
-        # a trick to input actions and advantages through same API
-        actions, advantages = tf.split(acts_and_advs, 2, axis=-1)
-        # sparse categorical CE loss obj that supports sample_weight arg on call()
-        # from_logits argument ensures transformation into normalized probabilities
-        weighted_sparse_ce = kls.SparseCategoricalCrossentropy(from_logits=True)
-        # policy loss is defined by policy gradients, weighted by advantages
-        # note: we only calculate the loss on the actions we've actually taken
-        actions = tf.cast(actions, tf.int32)
-        policy_loss = weighted_sparse_ce(actions, logits, sample_weight=advantages)
-        # entropy loss can be calculated via CE over itself
-        entropy_loss = kls.categorical_crossentropy(logits, logits, from_logits=True)
-        # here signs are flipped because optimizer minimizes
-        return policy_loss - self.params['entropy'] * entropy_loss
+    # def _value_loss(self, returns, value):
+    #     # value loss is typically MSE between value estimates and returns
+    #     return self.params['value'] * kls.mean_squared_error(returns, value)

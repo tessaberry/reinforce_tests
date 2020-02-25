@@ -7,9 +7,14 @@ import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 
-#from models.simple_dense_model_v0 import Model
+
+from loss.policy_and_entropy_loss import PolicyAndEntropyLoss
+from loss.value_loss import ValueLoss
+
 from models.seperate_actor_critic import SeparateActorCritic
-from agents.A2C_agent import A2CAgent
+
+from algorithms.A2C import A2CAgent
+
 
 ##-----------------
 ##  Set Up
@@ -23,7 +28,12 @@ env = gym.make('CartPole-v0')
 model = SeparateActorCritic(num_actions=env.action_space.n,
                             actor_conv_layers=None,
                             critic_conv_layers=None)
-agent = A2CAgent(model)
+
+entropy_loss = PolicyAndEntropyLoss(entropy_coeff=0.0001)
+value_loss = ValueLoss()
+agent = A2CAgent(model,
+                 policy_loss=entropy_loss.get_loss,
+                 value_loss=value_loss.get_loss)
 
 ##-----------------
 ##  Train
