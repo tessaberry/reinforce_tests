@@ -30,12 +30,4 @@ We want the expectation of `L = pi_new/pi_old * advantages`
 We use the advantage function instead of the expected reward because it reduces the variance of the estimation
 
 We want to make sure that the ratio of new and old policies don't 
-move too much past an epsilon 
-```
-    p1 = ratio * advantages
-    p2 = K.clip(ratio, min_value=1 - clipping_val, max_value=1 + clipping_val) * advantages
-    actor_loss = -K.mean(K.minimum(p1, p2))
-    critic_loss = K.mean(K.square(rewards - values))
-    total_loss = critic_discount * critic_loss + actor_loss - entropy_beta * K.mean(
-            -(newpolicy_probs * K.log(newpolicy_probs + 1e-10)))
-```
+move too much past an epsilon so we clip the KL divergence
