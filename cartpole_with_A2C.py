@@ -11,7 +11,7 @@ import tensorflow.keras.optimizers as ko
 from loss.policy_and_entropy_loss import PolicyAndEntropyLoss
 from loss.value_loss import ValueLoss
 
-from models.seperate_actor_critic import SeparateActorCritic
+from models.actor_critic_models import SeparateActorCritic
 
 from algorithms.A2C import A2CAgent
 
