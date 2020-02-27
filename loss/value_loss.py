@@ -7,7 +7,7 @@ import logging
 
 class ValueLoss:
     def __init__(self,
-                 value_coeff=0.5):
+                 value_coeff=0.05):
         self.value_coeff = value_coeff
 
     def get_loss(self,

@@ -11,19 +11,13 @@ class A2CAgent:
                  model,
                  policy_loss,
                  value_loss,
-                 optimizer = ko.RMSprop(lr=0.0007)):
-        # hyperparameters for loss terms, gamma is the discount coefficient
-        self.params = {
-            'gamma': 0.99,
-            #'value': 0.5,
-            #'entropy': 0.0001
-        }
+                 optimizer = ko.RMSprop(lr=0.0007),
+                 gamma=0.99):
+        self.gamma = gamma
         self.model = model
         self.model.compile(
             optimizer=optimizer,
             # define separate losses for policy logits and value estimate
-            #TODO try importing PolicyAndEntropyLoss here and calling it that way
-            #loss=[self._logits_loss, self._value_loss]
             loss=[policy_loss,value_loss]
         )
 
@@ -72,12 +66,9 @@ class A2CAgent:
         returns = np.append(np.zeros_like(rewards), next_value, axis=-1)
         # returns are calculated as discounted sum of future rewards
         for t in reversed(range(rewards.shape[0])):
-            returns[t] = rewards[t] + self.params['gamma'] * returns[t + 1] * (1 - dones[t])
+            returns[t] = rewards[t] + self.gamma * returns[t + 1] * (1 - dones[t])
         returns = returns[:-1]
         # advantages are returns - baseline, value estimates in our case
         advantages = returns - values
         return returns, advantages
 
-    # def _value_loss(self, returns, value):
-    #     # value loss is typically MSE between value estimates and returns
-    #     return self.params['value'] * kls.mean_squared_error(returns, value)
